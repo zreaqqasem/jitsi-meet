@@ -292,7 +292,7 @@ export function calculateResponsiveTileViewDimensions({
     isVerticalFilmstrip = false,
     maxColumns,
     numberOfParticipants,
-    numberOfVisibleTiles = TILE_VIEW_DEFAULT_NUMBER_OF_VISIBLE_TILES
+    desiredNumberOfVisibleTiles = TILE_VIEW_DEFAULT_NUMBER_OF_VISIBLE_TILES
 }) {
     let height, width;
     let columns, rows;
@@ -306,12 +306,12 @@ export function calculateResponsiveTileViewDimensions({
         maxArea: 0
     };
 
-    for (let c = 1; c <= Math.min(maxColumns, numberOfParticipants); c++) {
+    for (let c = 1; c <= Math.min(maxColumns, numberOfParticipants, desiredNumberOfVisibleTiles); c++) {
         const r = Math.ceil(numberOfParticipants / c);
 
-        // we want to display as much as possible tumbnails up to numberOfVisibleTiles
+        // we want to display as much as possible tumbnails up to desiredNumberOfVisibleTiles
         const visibleRows
-            = numberOfParticipants <= numberOfVisibleTiles ? r : Math.floor(numberOfVisibleTiles / c);
+            = numberOfParticipants <= desiredNumberOfVisibleTiles ? r : Math.floor(desiredNumberOfVisibleTiles / c);
 
         const size = calculateThumbnailSizeForTileView({
             columns: c,
@@ -325,18 +325,33 @@ export function calculateResponsiveTileViewDimensions({
 
         if (size) {
             const { height: currentHeight, width: currentWidth, minHeightEnforced, maxVisibleRows } = size;
-            let area = currentHeight * currentWidth * Math.min(c * maxVisibleRows, numberOfParticipants);
+            const numberOfVisibleParticipants = Math.min(c * maxVisibleRows, numberOfParticipants);
+            let area = currentHeight * currentWidth * numberOfVisibleParticipants;
             const currentDimensions = {
                 maxArea: area,
                 height: currentHeight,
                 width: currentWidth,
                 columns: c,
-                rows: r
+                rows: r,
+                numberOfVisibleParticipants
             };
+            const { numberOfVisibleParticipants: oldNumberOfVisibleParticipants = 0 } = dimensions;
 
-            if (!minHeightEnforced && area > dimensions.maxArea) {
-                dimensions = currentDimensions;
-            } else if (minHeightEnforced && area > minHeightEnforcedDimensions.maxArea) {
+            if (!minHeightEnforced) {
+                if (area > dimensions.maxArea) {
+                    dimensions = currentDimensions;
+                } else if ((area === dimensions.maxArea)
+                    && ((oldNumberOfVisibleParticipants > desiredNumberOfVisibleTiles
+                            && oldNumberOfVisibleParticipants >= numberOfParticipants)
+                        || (oldNumberOfVisibleParticipants < numberOfParticipants
+                            && numberOfVisibleParticipants <= desiredNumberOfVisibleTiles))
+                ) { // If the area of the new candidates and the old ones are equal we preffer the one that will have
+                    // closer number of visible participants to desiredNumberOfVisibleTiles config.
+                    dimensions = currentDimensions;
+                }
+            } else if (minHeightEnforced && area >= minHeightEnforcedDimensions.maxArea) {
+                // If we choose comfiguration with minHeightEnforced there will be less than desiredNumberOfVisibleTiles
+                // visible tiles, that's why we prefer more columns when the area is the same.
                 minHeightEnforcedDimensions = currentDimensions;
             } else if (minHeightEnforced && maxVisibleRows === 0) {
                 area = currentHeight * currentWidth * Math.min(c, numberOfParticipants);

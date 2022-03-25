@@ -77,7 +77,7 @@ export function setTileViewDimensions() {
                 disableTileEnlargement,
                 maxColumns,
                 numberOfParticipants,
-                numberOfVisibleTiles
+                desiredNumberOfVisibleTiles: numberOfVisibleTiles
             });
         const thumbnailsTotalHeight = rows * (TILE_VERTICAL_MARGIN + height);
         const hasScroll = clientHeight < thumbnailsTotalHeight;
@@ -145,7 +145,7 @@ export function setVerticalViewDimensions() {
                 isVerticalFilmstrip: true,
                 maxColumns,
                 numberOfParticipants,
-                numberOfVisibleTiles
+                desiredNumberOfVisibleTiles: numberOfVisibleTiles
             });
             const thumbnailsTotalHeight = rows * (TILE_VERTICAL_MARGIN + height);
 
