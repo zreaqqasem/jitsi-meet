@@ -1,6 +1,6 @@
 // @flow
 
-import { CONFERENCE_WILL_JOIN } from '../base/conference/actionTypes';
+import { CONFERENCE_JOIN_IN_PROGRESS } from '../base/conference/actionTypes';
 import {
     getParticipantById,
     getPinnedParticipant,
@@ -58,15 +58,13 @@ let nextOnStageTimer = 0;
  */
 MiddlewareRegistry.register(store => next => action => {
     switch (action.type) {
-    case CONFERENCE_WILL_JOIN: {
+    case CONFERENCE_JOIN_IN_PROGRESS: {
         const { conference } = action;
 
-        if (!store.getState()['features/base/conference'].authRequired) {
-            conference.addCommandListener(
-                FOLLOW_ME_COMMAND, ({ attributes }, id) => {
-                    _onFollowMeCommand(attributes, id, store);
-                });
-        }
+        conference.addCommandListener(
+            FOLLOW_ME_COMMAND, ({ attributes }, id) => {
+                _onFollowMeCommand(attributes, id, store);
+            });
         break;
     }
     case PARTICIPANT_LEFT:
