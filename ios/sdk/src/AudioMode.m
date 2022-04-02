@@ -96,7 +96,7 @@ RCT_EXPORT_MODULE();
         audioCallConfig = [[RTCAudioSessionConfiguration alloc] init];
         audioCallConfig.category = AVAudioSessionCategoryPlayAndRecord;
         audioCallConfig.categoryOptions = AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionDefaultToSpeaker;
-        audioCallConfig.mode = AVAudioSessionModeVoiceChat;
+        audioCallConfig.mode = AVAudioSessionModeDefault;
 
         videoCallConfig = [[RTCAudioSessionConfiguration alloc] init];
         videoCallConfig.category = AVAudioSessionCategoryPlayAndRecord;
@@ -107,7 +107,7 @@ RCT_EXPORT_MODULE();
         earpieceConfig = [[RTCAudioSessionConfiguration alloc] init];
         earpieceConfig.category = AVAudioSessionCategoryPlayAndRecord;
         earpieceConfig.categoryOptions = 0;
-        earpieceConfig.mode = AVAudioSessionModeVoiceChat;
+        earpieceConfig.mode = AVAudioSessionModeDefault;
 
         forceSpeaker = NO;
         forceEarpiece = NO;
